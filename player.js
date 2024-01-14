@@ -191,11 +191,11 @@ class WebPlayer {
       localStorage.getItem('volume')
     ) {
       this.currentSong = localStorage.getItem('currentSong');
-      this.audio.src = songs[currentSong].src;
+      this.audio.src = this.songs[this.currentSong].src;
       this.audio.currentTime = localStorage.getItem('currentTime');
-      this.songTitle.innerText = songs[currentSong].title;
+      this.songTitle.innerText = this.songs[this.currentSong].title;
       this.audio.volume = localStorage.getItem('volume');
-      this.volume.value = audio.volume * 100;
+      this.volume.value = this.audio.volume * 100;
       this.audio.load();
     }
   }
@@ -203,6 +203,7 @@ class WebPlayer {
   setup() {
     document.head.appendChild(this.style);
     document.body.appendChild(this.player);
+    this.sync();
     this.audio.play();
     this.audio.autoplay = true;
 
