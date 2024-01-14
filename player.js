@@ -8,7 +8,7 @@ class WebPlayer {
     this.images = options.images;
 
     this.currentSong = 0;
-    this.audio = this.craeteAudio();
+    this.audio = this.createAudio();
     this.started = false;
     this.paused = false;
   }
@@ -27,7 +27,7 @@ class WebPlayer {
     return array;
   }
 
-  craeteAudio() {
+  createAudio() {
     const audio = new Audio(this.songs[this.currentSong].src);
     audio.volume = 0.1;
     audio.preload = 'auto';
