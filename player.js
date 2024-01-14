@@ -47,6 +47,7 @@ class WebPlayer {
 
     if (localStorage.getItem('paused') === 'true') {
       this.paused = localStorage.getItem('paused');
+      this.element.querySelector('img').src = this.images[1];
     }
   }
 
