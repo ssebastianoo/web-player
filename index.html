@@ -38,6 +38,16 @@
       .right {
         text-align: right;
       }
+
+      #jukebox {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+      }
+
+      #jukebox img {
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
@@ -45,6 +55,9 @@
       <h1>Lorem Ipsum</h1>
     </header>
     <main>
+      <div id="jukebox">
+        <img src="jukebox.png" alt="Jukebox" height="80px" />
+      </div>
       <div class="container">
         <p>
           Lorem eu est adipisicing do magna velit do voluptate nulla dolore
@@ -111,6 +124,8 @@
     <script src="player.js"></script>
     <script>
       const player = new WebPlayer({
+        element: '#jukebox',
+        images: ['jukebox.png', 'jukebox2.png'],
         songs: [
           {
             title: 'Kanye West - All Mine',
