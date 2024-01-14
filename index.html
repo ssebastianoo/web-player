@@ -109,5 +109,28 @@
       </div>
     </main>
     <script src="player.js"></script>
+    <script>
+      const player = new WebPlayer({
+        songs: [
+          {
+            title: 'Kanye West - All Mine',
+            src: './songs/Kanye West - All Mine.mp3',
+          },
+          {
+            title: 'Mac Miller - The Spins',
+            src: './songs/Mac Miller - The Spins.mp3',
+          },
+          {
+            title: 'Linkin Park - In the End',
+            src: './songs/Linkin Park - In the End.flac',
+          },
+          {
+            title: 'MGMT - Electric Feel (Justice Remix)',
+            src: './songs/MGMT - Electric Feel (Justice Remix).mp3',
+          },
+        ],
+      });
+      player.setup();
+    </script>
   </body>
 </html>

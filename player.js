@@ -1,324 +1,331 @@
-const songs = [
-  {
-    title: 'Kanye West - All Mine',
-    src: './songs/Kanye West - All Mine.mp3',
-  },
-  {
-    title: 'Mac Miller - The Spins',
-    src: './songs/Mac Miller - The Spins.mp3',
-  },
-  {
-    title: 'Linkin Park - In the End',
-    src: './songs/Linkin Park - In the End.flac',
-  },
-  {
-    title: 'MGMT - Electric Feel (Justice Remix)',
-    src: './songs/MGMT - Electric Feel (Justice Remix).mp3',
-  },
-];
+class WebPlayer {
+  constructor(options = {}) {
+    this.songs = options.songs || [];
+    this.mainColor = options.mainColor || '#a36dde';
+    this.accentColor = options.accentColor || '#8856bf';
+    this.textColor = options.textColor || '#fff';
 
-let currentSong = 0;
-const audio = new Audio(songs[currentSong].src);
-audio.controls = true;
-audio.autoplay = true;
-audio.preload = 'auto';
-let started = false;
-
-const id = 'b59a2567b-45a2-4ce9-93b2-bf82f0bb5c22';
-
-const player = document.createElement('div');
-player.className = `${id}_player`;
-
-const playerHTML = `
-  <div class="${id}_cover">
-    <p id="${id}_musicSymbol">🎵</p>
-    <p id="${id}_songTitle">${songs[currentSong].title}</p>
-  </div>
-  <div class="${id}_controls">
-    <div class="${id}_playback-container ${id}_line">
-      <p id="${id}_previous">⏪</p>
-      <p id="${id}_pause">⏸️</p>
-      <p id="${id}_next">⏩</p>
-    </div>
-    <div class="${id}_volume-container ${id}_line">
-      <p>🔇</p>
-      <input id="${id}_volume" type="range" min="0" max="100" value="50">
-      <p>🔊</p>
-    </div>
-  </div>
-  <div class="${id}_timeline ${id}_line">
-    <code id="${id}_currentTime">0:00</code>
-    <input class="${id}_time" type="range" min="1" max="100" value="50">
-    <code id="${id}_duration">0:00</code>
-  </div>
-`;
-
-player.innerHTML = playerHTML;
-
-const style = document.createElement('style');
-const mainColor = '#a36dde';
-const accentColor = '#8856bf';
-const textColor = '#fff';
-
-style.innerHTML = `
-
-@keyframes ${id}_slideIn {
-  to {
-    transform: translateX(0);
-  }
-}
-
-.${id}_player {
-  width: 150px;
-  background-color: rgba(83, 84, 84, 0.5);
-  backdrop-filter: blur(3px);
-  padding: 10px;
-  border-radius: 7px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue",sans-serif;
-  color: ${textColor};
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  transform: translateX(200%);
-  user-select: none;
-  z-index: 999;
-  height: 115px;
-  transition: height 0.5s cubic-bezier(0.08,0.82,0.17,1);
-}
-
-.${id}_player p {
-  margin: 0;
-}
-
-.${id}_cover {
-  background-color: ${mainColor};
-  width: 100%;
-  height: 90px;  
-  display: flex;
-  align-items: flex-end;
-  border-radius: 5px;
-  position: relative;
-}
-
-#${id}_musicSymbol {
-  font-size: 22px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-#${id}_songTitle {
-  padding: 6px 8px;
-  font-size: 11px;
-}
-
-.${id}_line {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.${id}_timeline code {
-  font-size: 11px;
-}
-
-.${id}_player input[type="range"] {
-  -webkit-appearance: none;
-  width: 100%;
-  margin: 0;
-  background: ${accentColor};
-  accent-color: ${mainColor};
-  height: 8px;
-  border-radius: 20px;
-}
-
-@keyframes ${id}_appear {
-  to {
-    opacity: 1;
-  }
-}
-
-.${id}_controls {
-  display: none;
-  opacity: 0;
-  flex-direction: column;
-  justify-content: center;
-  gap: 6px;
-}
-
-.${id}_controls p {
-  font-size: 13px;
-}
-
-.${id}_controls .${id}_playback-container p {
-  cursor: pointer;
-}
-
-.${id}_player:hover {
-  height: 168px;
-}
-
-.${id}_player:hover .${id}_controls {
-  animation: ${id}_appear 0.5s ease forwards;
-}
-`;
-
-function setTime(e) {
-  isMouseDown = false;
-  audio.currentTime = e.target.value;
-}
-
-let isMouseDown = false;
-
-// make a function to transform song seconds into readable time
-function formatTime(time) {
-  const minutes = Math.floor(time / 60);
-  const seconds = Math.floor(time % 60);
-
-  const formattedSeconds = seconds.toString().padStart(2, '0');
-
-  return `${minutes}:${formattedSeconds}`;
-}
-
-window.addEventListener('load', () => {
-  document.head.appendChild(style);
-  document.body.appendChild(player);
-  audio.volume = 0.3;
-  audio.play();
-  const input = player.querySelector(`.${id}_time`);
-  const songTitle = player.querySelector(`#${id}_songTitle`);
-  const currentTime = player.querySelector(`#${id}_currentTime`);
-  const duration = player.querySelector(`#${id}_duration`);
-  const playIcon = player.querySelector(`#${id}_pause`);
-  const volume = player.querySelector(`#${id}_volume`);
-  volume.value = audio.volume * 100;
-
-  if (
-    localStorage.getItem('currentSong') &&
-    localStorage.getItem('currentTime') &&
-    localStorage.getItem('volume')
-  ) {
-    currentSong = localStorage.getItem('currentSong');
-    audio.src = songs[currentSong].src;
-    audio.currentTime = localStorage.getItem('currentTime');
-    songTitle.innerText = songs[currentSong].title;
-    audio.volume = localStorage.getItem('volume');
-    volume.value = audio.volume * 100;
-    audio.load();
+    this.id = 'b59a2567b-45a2-4ce9-93b2-bf82f0bb5c22';
+    this.currentSong = 0;
+    this.player = this.createPlayer();
+    this.style = this.createStyle();
+    this.audio = this.craeteAudio();
+    this.input = this.player.querySelector(`.${this.id}_time`);
+    this.songTitle = this.player.querySelector(`#${this.id}_songTitle`);
+    this.currentTime = this.player.querySelector(`#${this.id}_currentTime`);
+    this.duration = this.player.querySelector(`#${this.id}_duration`);
+    this.playIcon = this.player.querySelector(`#${this.id}_pause`);
+    this.volume = this.player.querySelector(`#${this.id}_volume`);
+    this.volume.value = this.audio.volume * 100;
+    this.started = false;
   }
 
-  const tryPlay = setInterval(() => {
-    if (!started) {
-      audio.play();
-      if (!audio.paused) {
-        started = true;
-        playIcon.innerText = '⏯️';
-        player.animate([{ transform: 'translateX(0)' }], {
-          duration: 700,
-          easing: 'cubic-bezier(0.08,0.82,0.17,1)',
-          fill: 'forwards',
-        });
-      }
-    } else {
-      clearInterval(tryPlay);
-    }
-  }, 300);
+  createPlayer() {
+    const player = document.createElement('div');
+    player.className = `${this.id}_player`;
 
-  input.addEventListener('input', () => {
-    isMouseDown = true;
-  });
-  input.addEventListener('change', setTime);
+    const playerHTML = `
+        <div class="${this.id}_cover">
+            <p id="${this.id}_musicSymbol">🎵</p>
+            <p id="${this.id}_songTitle">${
+      this.songs[this.currentSong].title
+    }</p>
+        </div>
+        <div class="${this.id}_controls">
+            <div class="${this.id}_playback-container ${this.id}_line">
+            <p id="${this.id}_previous">⏪</p>
+            <p id="${this.id}_pause">⏸️</p>
+            <p id="${this.id}_next">⏩</p>
+            </div>
+            <div class="${this.id}_volume-container ${this.id}_line">
+            <p>🔇</p>
+            <input id="${
+              this.id
+            }_volume" type="range" min="0" max="100" value="50">
+            <p>🔊</p>
+            </div>
+        </div>
+        <div class="${this.id}_timeline ${this.id}_line">
+            <code id="${this.id}_currentTime">0:00</code>
+            <input class="${
+              this.id
+            }_time" type="range" min="1" max="100" value="50">
+            <code id="${this.id}_duration">0:00</code>
+        </div>
+    `;
+    player.innerHTML = playerHTML;
+    return player;
+  }
 
-  setInterval(() => {
-    currentTime.innerText = formatTime(audio.currentTime);
-    duration.innerText = formatTime(audio.duration);
-    if (!isMouseDown) {
-      input.value = audio.currentTime;
-      input.max = audio.duration;
-
-      if (audio.currentTime >= audio.duration) {
-        if (currentSong < songs.length - 1) {
-          currentSong++;
-        } else {
-          currentSong = 0;
+  createStyle() {
+    const style = document.createElement('style');
+    style.innerHTML = `
+        @keyframes ${this.id}_slideIn {
+        to {
+            transform: translateX(0);
         }
-        audio.src = songs[currentSong].src;
-        songTitle.innerText = songs[currentSong].title;
+        }
 
-        audio.currentTime = 0;
-        input.max = audio.duration;
-        audio.load();
+        .${this.id}_player {
+        width: 150px;
+        background-color: rgba(83, 84, 84, 0.5);
+        backdrop-filter: blur(3px);
+        padding: 10px;
+        border-radius: 7px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue",sans-serif;
+        color: ${this.textColor};
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        transform: translateX(200%);
+        user-select: none;
+        z-index: 999;
+        height: 115px;
+        transition: height 0.5s cubic-bezier(0.08,0.82,0.17,1);
+        }
+
+        .${this.id}_player p {
+        margin: 0;
+        }
+
+        .${this.id}_cover {
+        background-color: ${this.mainColor};
+        width: 100%;
+        height: 90px;  
+        display: flex;
+        align-items: flex-end;
+        border-radius: 5px;
+        position: relative;
+        }
+
+        #${this.id}_musicSymbol {
+        font-size: 22px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        }
+
+        #${this.id}_songTitle {
+        padding: 6px 8px;
+        font-size: 11px;
+        }
+
+        .${this.id}_line {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        }
+
+        .${this.id}_timeline code {
+        font-size: 11px;
+        }
+
+        .${this.id}_player input[type="range"] {
+        -webkit-appearance: none;
+        width: 100%;
+        margin: 0;
+        background: ${this.accentColor};
+        accent-color: ${this.mainColor};
+        height: 8px;
+        border-radius: 20px;
+        }
+
+        @keyframes ${this.id}_appear {
+        to {
+            opacity: 1;
+        }
+        }
+
+        .${this.id}_controls {
+        display: none;
+        opacity: 0;
+        flex-direction: column;
+        justify-content: center;
+        gap: 6px;
+        }
+
+        .${this.id}_controls p {
+        font-size: 13px;
+        }
+
+        .${this.id}_controls .${this.id}_playback-container p {
+        cursor: pointer;
+        }
+
+        .${this.id}_player:hover {
+        height: 168px;
+        }
+
+        .${this.id}_player:hover .${this.id}_controls {
+        animation: ${this.id}_appear 0.5s ease forwards;
+        }
+    `;
+    return style;
+  }
+
+  craeteAudio() {
+    const audio = new Audio(this.songs[this.currentSong].src);
+    audio.volume = 0.3;
+    audio.preload = 'auto';
+    return audio;
+  }
+
+  formatTime(time) {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+
+    const formattedSeconds = seconds.toString().padStart(2, '0');
+
+    return `${minutes}:${formattedSeconds}`;
+  }
+
+  sync() {
+    if (
+      localStorage.getItem('currentSong') &&
+      localStorage.getItem('currentTime') &&
+      localStorage.getItem('volume')
+    ) {
+      this.currentSong = localStorage.getItem('currentSong');
+      this.audio.src = songs[currentSong].src;
+      this.audio.currentTime = localStorage.getItem('currentTime');
+      this.songTitle.innerText = songs[currentSong].title;
+      this.audio.volume = localStorage.getItem('volume');
+      this.volume.value = audio.volume * 100;
+      this.audio.load();
+    }
+  }
+
+  setup() {
+    document.head.appendChild(this.style);
+    document.body.appendChild(this.player);
+    this.audio.play();
+    this.audio.autoplay = true;
+
+    const tryPlay = setInterval(() => {
+      if (!this.started) {
+        this.audio.play();
+        if (!this.audio.paused) {
+          this.started = true;
+          this.playIcon.innerText = '⏯️';
+          this.player.animate([{ transform: 'translateX(0)' }], {
+            duration: 700,
+            easing: 'cubic-bezier(0.08,0.82,0.17,1)',
+            fill: 'forwards',
+          });
+        }
+      } else {
+        clearInterval(tryPlay);
       }
-    }
-  }, 300);
+    }, 300);
 
-  setInterval(() => {
-    localStorage.setItem('currentSong', currentSong);
-    localStorage.setItem('currentTime', audio.currentTime);
-    localStorage.setItem('volume', audio.volume);
-  }, 1000);
+    let isMouseDown = false;
 
-  volume.addEventListener('input', () => {
-    audio.volume = volume.value / 100;
-  });
+    this.input.addEventListener('input', () => {
+      this.isMouseDown = true;
+    });
 
-  let alreadyQuit = false;
+    this.input.addEventListener('change', (e) => {
+      this.isMouseDown = false;
+      this.audio.currentTime = e.target.value;
+    });
 
-  player.addEventListener('mouseover', () => {
-    alreadyQuit = false;
+    setInterval(() => {
+      this.currentTime.innerText = this.formatTime(this.audio.currentTime);
+      this.duration.innerText = this.formatTime(this.audio.duration);
 
-    setTimeout(() => {
-      if (!alreadyQuit) {
-        player.querySelector(`.${id}_controls`).style.display = 'flex';
+      if (!isMouseDown) {
+        this.input.value = this.audio.currentTime;
+        this.input.max = this.audio.duration;
+
+        if (this.audio.currentTime >= this.audio.duration) {
+          if (this.currentSong < this.songs.length - 1) {
+            this.currentSong++;
+          } else {
+            this.currentSong = 0;
+          }
+          this.audio.src = this.songs[this.currentSong].src;
+          this.songTitle.innerText = this.songs[this.currentSong].title;
+
+          this.audio.currentTime = 0;
+          this.input.max = this.audio.duration;
+          this.audio.load();
+        }
       }
-    }, 100);
-  });
+    }, 300);
 
-  player.addEventListener('mouseleave', () => {
-    alreadyQuit = true;
-    player.querySelector(`.${id}_controls`).style.display = 'none';
-  });
+    setInterval(() => {
+      localStorage.setItem('currentSong', this.currentSong);
+      localStorage.setItem('currentTime', this.audio.currentTime);
+      localStorage.setItem('volume', this.audio.volume);
+    }, 1000);
 
-  playIcon.addEventListener('click', (e) => {
-    if (audio.paused) {
-      e.target.innerText = '⏯️';
-      audio.play();
-    } else {
-      e.target.innerText = '⏸️';
-      audio.pause();
-    }
-  });
+    this.volume.addEventListener('input', () => {
+      this.audio.volume = this.volume.value / 100;
+    });
 
-  player.querySelector(`#${id}_previous`).addEventListener('click', () => {
-    if (currentSong > 0) {
-      currentSong--;
-    } else {
-      currentSong = songs.length - 1;
-    }
-    audio.src = songs[currentSong].src;
-    songTitle.innerText = songs[currentSong].title;
+    let alreadyQuit = false;
 
-    audio.currentTime = 0;
-    input.max = audio.duration;
-    audio.load();
-  });
+    this.player.addEventListener('mouseover', () => {
+      alreadyQuit = false;
 
-  player.querySelector(`#${id}_next`).addEventListener('click', () => {
-    if (currentSong < songs.length - 1) {
-      currentSong++;
-    } else {
-      currentSong = 0;
-    }
-    audio.src = songs[currentSong].src;
-    songTitle.innerText = songs[currentSong].title;
+      setTimeout(() => {
+        if (!alreadyQuit) {
+          this.player.querySelector(`.${this.id}_controls`).style.display =
+            'flex';
+        }
+      }, 100);
+    });
 
-    audio.currentTime = 0;
-    input.max = audio.duration;
-    audio.load();
-  });
-});
+    this.player.addEventListener('mouseleave', () => {
+      alreadyQuit = true;
+      this.player.querySelector(`.${this.id}_controls`).style.display = 'none';
+    });
+
+    this.playIcon.addEventListener('click', (e) => {
+      if (this.audio.paused) {
+        e.target.innerText = '⏯️';
+        this.audio.play();
+      } else {
+        e.target.innerText = '⏸️';
+        this.audio.pause();
+      }
+    });
+
+    this.player
+      .querySelector(`#${this.id}_previous`)
+      .addEventListener('click', () => {
+        if (this.currentSong > 0) {
+          this.currentSong--;
+        } else {
+          this.currentSong = this.songs.length - 1;
+        }
+        this.audio.src = this.songs[this.currentSong].src;
+        this.songTitle.innerText = this.songs[this.currentSong].title;
+
+        this.audio.currentTime = 0;
+        this.input.max = this.audio.duration;
+        this.audio.load();
+      });
+
+    this.player
+      .querySelector(`#${this.id}_next`)
+      .addEventListener('click', () => {
+        if (this.currentSong < this.songs.length - 1) {
+          this.currentSong++;
+        } else {
+          this.currentSong = 0;
+        }
+        this.audio.src = this.songs[this.currentSong].src;
+        this.songTitle.innerText = this.songs[this.currentSong].title;
+
+        this.audio.currentTime = 0;
+        this.input.max = this.audio.duration;
+        this.audio.load();
+      });
+  }
+}
