@@ -1,6 +1,6 @@
 class WebPlayer {
   constructor(options = {}) {
-    this.songs = options.songs || [];
+    this.songs = this.shuffle(options.songs);
     this.mainColor = options.mainColor || '#a36dde';
     this.accentColor = options.accentColor || '#8856bf';
     this.textColor = options.textColor || '#fff';
