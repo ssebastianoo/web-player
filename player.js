@@ -39,7 +39,11 @@ class WebPlayer {
       localStorage.getItem('currentSong') &&
       localStorage.getItem('currentTime')
     ) {
-      this.currentSong = localStorage.getItem('currentSong');
+      const indexed = this.songs.findIndex(
+        (x) => x.src === localStorage.getItem('currentSong'),
+      );
+
+      this.currentSong = indexed !== -1 ? indexed : 0;
       this.audio.src = this.songs[this.currentSong].src;
       this.audio.currentTime = localStorage.getItem('currentTime');
       this.audio.load();
@@ -88,7 +92,7 @@ class WebPlayer {
     }, 300);
 
     setInterval(() => {
-      localStorage.setItem('currentSong', this.currentSong);
+      localStorage.setItem('currentSong', this.songs[this.currentSong].src);
       localStorage.setItem('currentTime', this.audio.currentTime);
       localStorage.setItem('volume', this.audio.volume);
     }, 1000);
