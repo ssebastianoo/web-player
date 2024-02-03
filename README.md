@@ -1,6 +1,6 @@
 # Add music to your website!
 
-An easy to use widget to add music to your website with a simple script
+An easy to use widget to add music to your website with a simple script, you can see a demo [here](https://player.gir8.it)
 
 ![Widget Screenshot](https://raw.githubusercontent.com/ssebastianoo/web-player/main/screenshot.png)
 
